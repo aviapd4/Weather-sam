@@ -2,11 +2,16 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Explicitly define DynamoDB, API Gateway, and Lambda (Python 3.10).
 
+Parameters:
+  DynamoDBTableName:
+    Type: String
+    Description: Name of the DynamoDB table
+
 Resources:
   DynamoDBTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: WeatherData
+      TableName: !Ref DynamoDBTableName
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S
@@ -14,6 +19,10 @@ Resources:
         - AttributeName: id
           KeyType: HASH
       BillingMode: PAY_PER_REQUEST
+      SSESpecification:
+        SSEEnabled: true
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
 
   MyLambdaExecutionRole:
     Type: AWS::IAM::Role
@@ -46,6 +55,9 @@ Resources:
       CodeUri: lambda/
       Handler: add_function.create_handler
       Runtime: python3.9
+      Environment:
+        Variables:
+          DYNAMODB_TABLE_NAME: !Ref DynamoDBTableName
       Role: !GetAtt MyLambdaExecutionRole.Arn
 
   MyLambdaFunctionDelete:
@@ -54,6 +66,9 @@ Resources:
       CodeUri: lambda/
       Handler: delete_function.delete_handler
       Runtime: python3.9
+      Environment:
+        Variables:
+          DYNAMODB_TABLE_NAME: !Ref DynamoDBTableName
       Role: !GetAtt MyLambdaExecutionRole.Arn
 
   MyApiCreate:
@@ -102,6 +117,10 @@ Resources:
         AllowOrigin: "'*'"
 
 Outputs:
+  DynamoDBTableNameOutput:
+    Description: "Name of the DynamoDB table"
+    Value: !Ref DynamoDBTableName
+
   EndpointURLCreate:
     Description: "API Gateway endpoint URL for Create Prod stage"
     Value: !Sub "https://${MyApiCreate}.execute-api.${AWS::Region}.amazonaws.com/prod/resource/create"
