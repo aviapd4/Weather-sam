@@ -12,7 +12,7 @@ def delete_handler(event, context):
     aws_access_key_id = config('aws_access_key_id')
     aws_secret_access_key = config('aws_secret_access_key')
     aws_region = config('aws_region')
-    table_name =config('table_name')
+    table_name =config('DynamoDBTableName')
     # Create a DynamoDB client with the provided access keys and region
     dynamodb = boto3.client(
         'dynamodb',
