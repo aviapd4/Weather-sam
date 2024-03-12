@@ -10,3 +10,16 @@ Setup Clone this repository to your local machine:
 Create .env file with all AWS credentilas and also with table name
 
 Copy whole project into S3 bucket on aws then run this thtorugh using the aws cli.
+
+
+.env file structure
+""aws_access_key_id = "*****"
+aws_secret_access_key = "*****"
+aws_region = "*****"
+DynamoDBTableName ="*****"
+
+##for running pytest
+###run command
+pytest
+pytest test.py
+
